@@ -1,26 +1,25 @@
-import pandas as pd
+import functools
 
 
 class Scheduler:
     WEIGHTS = [4.25, 3.5, -2, -1.5, 1]
 
-    def get_heuristic_order_column(self, event_df):
-        order_column =\
-            [col * weight for (col, weight) in zip(
-                [event_df['deadline'], event_df['difficulty'],
-                 event_df['est_duration'], (event_df['deadline'] * event_df['difficulty'])],
-                Scheduler.WEIGHTS[1:])]
-        return map(sum, order_column) + Scheduler.WEIGHTS[0]
+    def get_heuristic_value(self, task, max_diff, max_dur):
+        return (Scheduler.WEIGHTS[0] + Scheduler.WEIGHTS[1] * task['deadline'] +
+                Scheduler.WEIGHTS[2] * task['difficulty'] / max_diff +
+                Scheduler.WEIGHTS[3] * task['est_duration'] / max_dur +
+                Scheduler.WEIGHTS[4] * task['deadline'] * task['difficulty'] / max_diff)
 
     def create_optimized_ordering(self, schedule_events):
-        event_df = pd.DataFrame(schedule_events)
-        event_df.sort_values(by=['deadline'], inplace=True)
-        event_df['deadline'] = list(range(len(event_df.index)))
-        event_df['difficulty'] = event_df['difficulty'] / (event_df['difficulty'].max() or 1)
-        event_df['est_duration'] = event_df['est_duration'] / (event_df['est_duration'].max() or 1)
-        event_df['order_value'] = self.get_heuristic_order_column(event_df)
-        event_df.sort_values(by=['order_value'])
-        columns = schedule_events.columns
-        schedule_events.index = schedule_events['id']
-        return pd.DataFrame([schedule_events.loc[id] for id in event_df['id']],
-                            columns=columns).to_dict('records')
+        schedule_events = sorted(schedule_events,
+                                 key=functools.cmp_to_key(lambda task_a, task_b:
+                                                          task_a['deadline'] - task_b['deadline']))
+        breakpoint()
+        for i in range(len(schedule_events)):
+            schedule_events[i]['deadline'] = i + 1
+        max_diff = max([task['difficulty'] for task in schedule_events]) or 1
+        max_dur = max([task['est_duration'] for task in schedule_events]) or 1
+
+        def comparer(task_a, task_b):
+            return self.get_heuristic_value(task_a, max_diff, max_dur) - self.get_heuristic_value(task_b, max_diff, max_dur)
+        return sorted(schedule_events, key=functools.cmp_to_key(comparer))
