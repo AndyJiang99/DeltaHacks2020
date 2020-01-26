@@ -1,17 +1,16 @@
-import os
-import pandas as pd
 import json
 
 from flask import Flask
-from flask_ngrok import run_with_ngrok
+# from flask_ngrok import run_with_ngrok
 from flask import request
 
 from google.cloud import language_v1
-from google.cloud.language_v1 import enums
+from google.cloud.language import enums
+from google.cloud.language import types
 
 
 app = Flask(__name__)
-run_with_ngrok(app)
+# run_with_ngrok(app)
 
 
 @app.route("/")
@@ -33,7 +32,6 @@ def schedule():
 @app.route('/testSentiments', methods=['POST'])
 def test():
     text_content = request.form["concatString"]
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\AndyJiang\Github\deltahacks2020-266223-a84fb8895002.json"
 
     client = language_v1.LanguageServiceClient()
 
@@ -70,7 +68,8 @@ def test():
     # Get the language of the text, which will be the same as
     # the language specified in the request or, if not specified,
     # the automatically-detected language.
-    return(u"Language of the text: {}".format(response.language))
+    # return(u"Language of the text: {}".format(response.language))
+    return(json.dumps({"sentiment": response.document_sentiment.score}))
 
 
 if __name__ == "__main__":
