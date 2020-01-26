@@ -76,13 +76,14 @@ def schedule():
     schedulable_events = task_data['events']['schedulable']
     sentiment_analysis = task_data['sentiment_message']
     
-    if (sentiment_analysis is not None):
+    if sentiment_analysis:
         sentiment_analysis = sentiment(sentiment_analysis)
 
     for event in schedulable_events:
         event['deadline'] = datetime.fromisoformat(event['deadline'][:-1])
     scheduler = Scheduler()
-    ordered_events = scheduler.create_optimized_ordering(schedulable_events)
+    ordered_events = scheduler.create_optimized_ordering(schedulable_events,
+                                                         sentiment_analysis)
     fixed_events = task_data['events']['fixed']
     for event in ordered_events:
         event['est_duration'] = timedelta(minutes=event['est_duration'])

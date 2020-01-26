@@ -9,8 +9,42 @@ class Scheduler:
                 Scheduler.WEIGHTS[2] * task['difficulty'] / max_diff +
                 Scheduler.WEIGHTS[3] * task['est_duration'] / max_dur +
                 Scheduler.WEIGHTS[4] * task['deadline'] * task['difficulty'] / max_diff)
+    
+    def apply_sentiment_transformation(self, events, sentiment_value):
+        if not sentiment_value:
+            return events
+        new_order = []
+        if sentiment_value < -0.25:
+            hi_diff = list(filter(lambda task: task['difficulty'] > 5, events))
+            low_diff = list(filter(lambda task: task['difficulty'] <= 5, events))
+            overlap = min(len(low_diff), len(hi_diff))
+            if len(low_diff) > len(hi_diff):
+                new_order += low_diff[:len(low_diff) - overlap]
+                for task_a, task_b in zip(low_diff[len(low_diff) - overlap:], hi_diff):
+                    new_order += [task_b, task_a]
+            elif len(hi_diff) > len(low_diff):
+                for i in range(overlap):
+                    new_order += [low_diff[i], hi_diff[i]]
+                new_order += hi_diff[overlap:]
+            else:
+                for i in range(overlap):
+                    new_order += [low_diff[i], hi_diff[i]]
+            return new_order
+        elif -0.25 <= sentiment_value and sentiment_value <= 0.25:
+            return events
+        elif 0.25 < sentiment_value:
+            hi_diff = list(filter(lambda task: task['difficulty'] > 5, events))
+            low_diff = list(filter(lambda task: task['difficulty'] <= 5, events))
+            overlap = min(len(low_diff), len(hi_diff))
+            for i in range(overlap):
+                new_order += [hi_diff[i], low_diff[i]]
+            if len(low_diff) > len(hi_diff):
+                new_order += low_diff[overlap:]
+            elif len(hi_diff) > len(low_diff):
+                new_order += hi_diff[overlap:]
+            return new_order
 
-    def create_optimized_ordering(self, schedule_events):
+    def create_optimized_ordering(self, schedule_events, sentiment_value):
         events = sorted(schedule_events, key=lambda task: task['deadline'])
         temp_deadlines = {}
         for i in range(len(events)):
@@ -19,6 +53,7 @@ class Scheduler:
         max_diff = max([task['difficulty'] for task in events]) or 1
         max_dur = max([task['est_duration'] for task in events]) or 1
         events = sorted(events, key=lambda task: self.get_heuristic_value(task, max_diff, max_dur))
+        events = self.apply_sentiment_transformation(events, sentiment_value)
         for event in events:
             event['deadline'] = temp_deadlines[event['id']]
         return events
