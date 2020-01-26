@@ -24,8 +24,10 @@ def iso_time(category):
     for event in category:
         if 'est_duration' in event:
             event['est_duration'] = int(event['est_duration'].seconds / 60)
-        event['start_time'] = event['start_time'].isoformat()
-        event['end_time'] = event['end_time'].isoformat()
+        if event['start_time']:
+            event['start_time'] = event['start_time'].isoformat()
+        if event['end_time']:
+            event['end_time'] = event['end_time'].isoformat()
 
 @app.route('/schedule-tasks', methods=['POST'])
 def schedule():
