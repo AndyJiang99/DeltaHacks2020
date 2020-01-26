@@ -88,6 +88,7 @@ class Scheduler:
                     cur_node.begin_time = event['end_time']
                 else:
                     cur_node.prev_node = LLNode(cur_node.begin_time, event['start_time'])
+                    cur_node.begin_time = event['end_time']
                     cur_node.prev_node.next_node = cur_node
                     cur_node = cur_node.prev_node
                 final_schedule.append(event.copy())

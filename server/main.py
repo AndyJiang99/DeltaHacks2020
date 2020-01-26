@@ -24,6 +24,8 @@ def iso_time(category):
     for event in category:
         if 'est_duration' in event:
             event['est_duration'] = int(event['est_duration'].seconds / 60)
+        if 'deadline' in event:
+            event['deadline'] = event['deadline'].isoformat()
         if event['start_time']:
             event['start_time'] = event['start_time'].isoformat()
         if event['end_time']:
