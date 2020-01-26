@@ -14,7 +14,6 @@ class Scheduler:
         schedule_events = sorted(schedule_events,
                                  key=functools.cmp_to_key(lambda task_a, task_b:
                                                           task_a['deadline'] - task_b['deadline']))
-        breakpoint()
         for i in range(len(schedule_events)):
             schedule_events[i]['deadline'] = i + 1
         max_diff = max([task['difficulty'] for task in schedule_events]) or 1
