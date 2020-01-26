@@ -29,32 +29,8 @@ def iso_time(category):
         if event['end_time']:
             event['end_time'] = event['end_time'].isoformat()
 
-@app.route('/schedule-tasks', methods=['POST'])
-def schedule():
-    task_data = json.loads(request.form["values"])
-    schedulable_events = task_data['events']['schedulable']
-    for event in schedulable_events:
-        event['deadline'] = datetime.fromisoformat(event['deadline'][:-1])
-    scheduler = Scheduler()
-    ordered_events = scheduler.create_optimized_ordering(schedulable_events)
-    fixed_events = task_data['events']['fixed']
-    for event in ordered_events:
-        event['est_duration'] = timedelta(minutes=event['est_duration'])
-    for event in fixed_events:
-        event['start_time'] = datetime.fromisoformat(event['start_time'][:-1])
-        event['end_time'] = datetime.fromisoformat(event['end_time'][:-1])
-    final_schedule, unschedulable =\
-        scheduler.determine_schedule(ordered_events, fixed_events,
-                                     datetime.fromisoformat(task_data['cur_time'][:-1]))
-    iso_time(final_schedule)
-    iso_time(unschedulable)
-    return jsonify(schedule=final_schedule, unschedulable=unschedulable)
 
-
-@app.route('/testSentiments', methods=['POST'])
-def test():
-    text_content = request.form["concatString"]
-
+def sentiment(text_content):
     client = language_v1.LanguageServiceClient()
 
     # text_content = 'I am so happy and joyful. I hate my life.'
@@ -91,7 +67,35 @@ def test():
     # the language specified in the request or, if not specified,
     # the automatically-detected language.
     # return(u"Language of the text: {}".format(response.language))
-    return(json.dumps({"sentiment": response.document_sentiment.score}))
+    return response.document_sentiment.score
+
+
+@app.route('/schedule-tasks', methods=['POST'])
+def schedule():
+    task_data = json.loads(request.form["values"])
+    schedulable_events = task_data['events']['schedulable']
+    sentiment_analysis = task_data['sentiment_message']
+    
+    if (sentiment_analysis is not None):
+        sentiment_analysis = sentiment(sentiment_analysis)
+
+    for event in schedulable_events:
+        event['deadline'] = datetime.fromisoformat(event['deadline'][:-1])
+    scheduler = Scheduler()
+    ordered_events = scheduler.create_optimized_ordering(schedulable_events)
+    fixed_events = task_data['events']['fixed']
+    for event in ordered_events:
+        event['est_duration'] = timedelta(minutes=event['est_duration'])
+    for event in fixed_events:
+        event['start_time'] = datetime.fromisoformat(event['start_time'][:-1])
+        event['end_time'] = datetime.fromisoformat(event['end_time'][:-1])
+    final_schedule, unschedulable =\
+        scheduler.determine_schedule(ordered_events, fixed_events,
+                                     datetime.fromisoformat(task_data['cur_time'][:-1]))
+    iso_time(final_schedule)
+    iso_time(unschedulable)
+    return jsonify(schedule=final_schedule, unschedulable=unschedulable)
+
 
 
 if __name__ == "__main__":
