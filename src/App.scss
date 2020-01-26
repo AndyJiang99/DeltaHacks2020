@@ -1,0 +1,57 @@
+body {
+  height: 100%;
+  background-color: #dde8e1;
+}
+
+html {
+  height: 100%;
+}
+
+.root {
+  height: 100%;
+}
+.App {
+  text-align: center;
+  height: 100%;
+}
+
+.buttons-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+
+  & > button {
+    font-size: 30px;
+    border-radius: 20px;
+  }
+}
+
+.tasksListContainer {
+  display: flex;
+  padding: 30px;
+}
+.tasksListColumn {
+  width: 30%;
+  padding: 0 10px;
+}
+
+.tasksList{
+  padding: 10px;
+  background-color: #cccccc;
+  height: 15em;
+  overflow-y: scroll;
+}
+
+.promptDialog {
+  padding: 30px;
+  width: 400px;
+  box-sizing: border-box;
+
+  &-content {
+    width: 100%;
+    box-sizing: border-box;
+    * {
+      width: 100%;
+    }
+  }
+}

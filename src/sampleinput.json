@@ -1,0 +1,37 @@
+{
+    "events": {
+        "schedulable": [
+            {
+                "id": 1,
+                "title": "Practice piano",
+                "description": "Ling Ling practices 40 hours a day and you're being lazy.",
+                "est_duration": 50,
+                "deadline": "2020-01-26T12:28:10.861Z",
+                "difficulty": 10,
+                "start_time": null,
+                "end_time": null
+            },
+            {
+                "id": 2,
+                "title": "Win DeltaHacks",
+                "description": "Enoch Poon is also the greatest front end developer",
+                "est_duration": 60,
+                "deadline": "2020-01-26T15:28:10.861Z",
+                "difficulty": 9,
+                "start_time": null,
+                "end_time": null
+            }
+        ],
+        "fixed": [
+            {
+                "id": 3,
+                "title": "TSO Mahler 5 Concert",
+                "description": "invited by Enoch",
+                "start_time": "2020-01-26T08:28:10.861Z",
+                "end_time": "2020-01-26T09:28:10.861Z"
+            }
+        ]
+    },
+    "cur_time": "2020-01-26T04:28:10.861Z",
+    "sentiment_message": null 
+}
