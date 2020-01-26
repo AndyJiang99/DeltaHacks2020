@@ -1,12 +1,15 @@
 import json
 
-from flask import Flask
-# from flask_ngrok import run_with_ngrok
+from datetime import datetime, timedelta
+from flask import Flask, jsonify
+from flask_ngrok import run_with_ngrok
 from flask import request
 
 from google.cloud import language_v1
 from google.cloud.language import enums
 from google.cloud.language import types
+from transformers.scheduler import Scheduler
+
 
 
 app = Flask(__name__)
@@ -18,15 +21,24 @@ def hello():
     return "Hello World!"
 
 
-@app.route('/scheduleTasks', methods=['POST'])
+@app.route('/schedule-tasks', methods=['POST'])
 def schedule():
-    stringload = json.loads(request.form["values"])
-    allEvents = stringload['events']['schedulable']
-    # scheduler = Scheduler()
-    # scheduler
-
-
-    return(str(allEvents))
+    task_data = json.loads(request.form["values"])
+    schedulable_events = task_data['events']['schedulable']
+    for event in schedulable_events:
+        event['deadline'] = datetime.fromisoformat(event['deadline'][:-1])
+    scheduler = Scheduler()
+    ordered_events = scheduler.create_optimized_ordering(schedulable_events)
+    fixed_events = task_data['events']['fixed']
+    for event in ordered_events:
+        event['est_duration'] = timedelta(minutes=event['est_duration'])
+    for event in fixed_events:
+        event['start_time'] = datetime.fromisoformat(event['start_time'][:-1])
+        event['end_time'] = datetime.fromisoformat(event['end_time'][:-1])
+    final_schedule, unschedulable =\
+        scheduler.determine_schedule(ordered_events, fixed_events,
+                                     datetime.fromisoformat(task_data['cur_time'][:-1]))
+    return jsonify(schedule=final_schedule, unschedulable=unschedulable)
 
 
 @app.route('/testSentiments', methods=['POST'])
