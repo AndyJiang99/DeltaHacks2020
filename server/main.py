@@ -2,7 +2,6 @@ import json
 
 from datetime import datetime, timedelta
 from flask import Flask, jsonify
-from flask_ngrok import run_with_ngrok
 from flask import request
 
 from google.cloud import language_v1
