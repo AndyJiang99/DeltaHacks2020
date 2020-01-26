@@ -74,7 +74,7 @@ class Scheduler:
         next_day_time = cur_time + timedelta(days=1)
         next_day_time = datetime(next_day_time.year, next_day_time.month, next_day_time.day)
         cur_node = LLNode(cur_time, next_day_time)
-        fixed_events = sorted(fixed_events, key=lambda task: task['end_time'])
+        fixed_events = reversed(sorted(fixed_events, key=lambda task: task['end_time']))
         for event in fixed_events:
             if cur_node is None:
                 unschedulable.append(event.copy())
