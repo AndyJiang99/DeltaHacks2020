@@ -75,7 +75,7 @@ def sentiment(text_content):
 
 @app.route('/schedule-tasks', methods=['POST'])
 def schedule():
-    task_data = json.loads(request.form["values"])
+    task_data = request.get_json()
     schedulable_events = task_data['events']['schedulable']
     sentiment_analysis = task_data['sentiment_message']
     
