@@ -2,3 +2,4 @@ flask
 flask-ngrok
 google.cloud
 google.cloud.language
+Flask-CORS

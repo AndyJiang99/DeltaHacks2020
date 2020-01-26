@@ -1,4 +1,5 @@
 import json
+from flask_cors import CORS
 
 from datetime import datetime, timedelta
 from flask import Flask, jsonify
@@ -13,6 +14,7 @@ from transformers.scheduler import Scheduler
 
 app = Flask(__name__)
 # run_with_ngrok(app)
+cors = CORS(app)
 
 
 @app.route("/")
