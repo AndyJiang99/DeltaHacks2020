@@ -1,0 +1,23 @@
+.timeline-task-summary {
+    > *{
+        display: flex;
+
+        .summ-div {
+            flex: 1;
+        }
+
+        .summary-title{
+            flex: 2;
+            margin: 0;
+        }
+    }
+    
+}
+
+.timeline-wrapper {
+    border-radius: 15px;
+    padding: 15px 30px;
+    background-color: #a5e5ff;
+    box-shadow: 2px -2px 15px 0px;
+    height: 100%;
+}

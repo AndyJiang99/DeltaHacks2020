@@ -1,0 +1,27 @@
+.create-content {
+    height: 700px;
+    width: 600px;
+    
+    > .MuiCardContent-root{
+        height: 80%;
+
+        > * {
+            width: 100%;
+            margin: 10px 0;
+        }
+    }
+
+    .actions {
+        padding: 16px;
+    }
+}
+
+.slider-container {
+    padding: 0 14px;
+    box-sizing: border-box;
+    > * {
+        padding-bottom: 35px;
+        display: block;
+    }
+}
+
