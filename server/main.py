@@ -20,6 +20,12 @@ app = Flask(__name__)
 def hello():
     return "Hello World!"
 
+def iso_time(category):
+    for event in category:
+        if 'est_duration' in event:
+            event['est_duration'] = int(event['est_duration'].seconds / 60)
+        event['start_time'] = event['start_time'].isoformat()
+        event['end_time'] = event['end_time'].isoformat()
 
 @app.route('/schedule-tasks', methods=['POST'])
 def schedule():
@@ -38,6 +44,8 @@ def schedule():
     final_schedule, unschedulable =\
         scheduler.determine_schedule(ordered_events, fixed_events,
                                      datetime.fromisoformat(task_data['cur_time'][:-1]))
+    iso_time(final_schedule)
+    iso_time(unschedulable)
     return jsonify(schedule=final_schedule, unschedulable=unschedulable)
 
 
